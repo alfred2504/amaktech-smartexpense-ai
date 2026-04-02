@@ -2,8 +2,7 @@ import { FaBell } from "react-icons/fa";
 
 export default function Navbar() {
   return (
-    <div className="flex justify-between items-center p-4 bg-white">
-      
+    <div className="flex justify-between items-center p-4 border-b bg-white">
       {/* Search */}
       <input
         type="text"
@@ -15,9 +14,8 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         <FaBell />
 
-        {/* Dynamic User Placeholder */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-300"></div>
+          <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
           <span>User</span>
         </div>
       </div>

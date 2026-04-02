@@ -1,5 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { FaHome, FaExchangeAlt, FaChartPie, FaWallet, FaUser } from "react-icons/fa";
+import {
+  FaHome,
+  FaExchangeAlt,
+  FaChartPie,
+  FaWallet,
+  FaUser,
+} from "react-icons/fa";
 
 const menu = [
   { name: "Dashboard", path: "/", icon: <FaHome /> },
@@ -11,17 +17,15 @@ const menu = [
 
 export default function Sidebar() {
   return (
-    <div className="w-64 bg-white h-screen p-4 flex flex-col">
-      {/* Logo */}
+    <div className="w-64 h-screen bg-white p-4 flex flex-col border-r">
       <h1 className="text-xl font-bold mb-8">SmartExpense AI</h1>
 
-      {/* Menu */}
       <nav className="flex flex-col gap-3">
         {menu.map((item) => (
           <NavLink
             key={item.name}
             to={item.path}
-            className="flex items-center gap-3 p-3 rounded-lg"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100"
           >
             {item.icon}
             {item.name}
