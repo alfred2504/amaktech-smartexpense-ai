@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import StatCard from "../components/StatCard";
+import PieChartBox from "../components/PieChartBox";
+import LineChartBox from "../components/LineChartBox";
 
 export default function DashboardPage() {
   const [data, setData] = useState({
@@ -8,13 +10,37 @@ export default function DashboardPage() {
     expenses: 0,
   });
 
+  const [pieData, setPieData] = useState([
+    { name: "Income", value: 0 },
+    { name: "Expenses", value: 0 },
+  ]);
+
+  const [lineData, setLineData] = useState([
+    { name: "Jan", income: 0, expenses: 0 },
+    { name: "Feb", income: 0, expenses: 0 },
+    { name: "Mar", income: 0, expenses: 0 },
+  ]);
+
   useEffect(() => {
-    // Temporary mock data (replace with API later)
-    setData({
+    // Mock data (replace with API later)
+    const mock = {
       balance: 2450,
       income: 1800,
       expenses: 650,
-    });
+    };
+
+    setData(mock);
+
+    setPieData([
+      { name: "Income", value: mock.income },
+      { name: "Expenses", value: mock.expenses },
+    ]);
+
+    setLineData([
+      { name: "Jan", income: 500, expenses: 200 },
+      { name: "Feb", income: 700, expenses: 300 },
+      { name: "Mar", income: 600, expenses: 150 },
+    ]);
   }, []);
 
   return (
@@ -22,7 +48,7 @@ export default function DashboardPage() {
       {/* Title */}
       <h1 className="text-2xl font-bold">Dashboard</h1>
 
-      {/* Responsive Cards */}
+      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
           title="Total Balance"
@@ -41,6 +67,12 @@ export default function DashboardPage() {
           value={data.expenses}
           gradient="bg-gradient-to-r from-[#EF4444] to-[#DC2626]"
         />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PieChartBox data={pieData} />
+        <LineChartBox data={lineData} />
       </div>
     </div>
   );
