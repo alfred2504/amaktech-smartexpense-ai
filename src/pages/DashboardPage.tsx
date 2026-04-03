@@ -1,19 +1,29 @@
+import { useEffect, useState } from "react";
 import StatCard from "../components/StatCard";
 
 export default function DashboardPage() {
-  const data = {
+  const [data, setData] = useState({
     balance: 0,
     income: 0,
     expenses: 0,
-  };
+  });
+
+  useEffect(() => {
+    // Temporary mock data (replace with API later)
+    setData({
+      balance: 2450,
+      income: 1800,
+      expenses: 650,
+    });
+  }, []);
 
   return (
     <div className="space-y-6">
       {/* Title */}
       <h1 className="text-2xl font-bold">Dashboard</h1>
 
-      {/* Cards (FORCED HORIZONTAL) */}
-      <div className="grid grid-cols-3 gap-6">
+      {/* Responsive Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
           title="Total Balance"
           value={data.balance}

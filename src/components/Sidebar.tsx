@@ -17,10 +17,10 @@ const menu = [
 
 export default function Sidebar() {
   return (
-    <div className="w-64 h-screen bg-white p-4 flex flex-col border-r">
+    <div className="hidden md:flex w-64 h-screen bg-white p-4 flex-col border-r">
       <h1 className="text-xl font-bold mb-8">SmartExpense AI</h1>
 
-      <nav className="flex flex-col gap-3">
+      <nav className="flex flex-col gap-2">
         {menu.map((item) => (
           <NavLink
             key={item.name}
