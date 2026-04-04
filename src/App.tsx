@@ -4,6 +4,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import TransactionsPage from "./pages/TransactionsPage"; // ✅ ADD THIS
 
 export default function App() {
   return (
@@ -12,13 +13,25 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected */}
+      {/* Dashboard */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
             <DashboardLayout>
               <DashboardPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Transactions */}
+      <Route
+        path="/transactions"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <TransactionsPage />
             </DashboardLayout>
           </ProtectedRoute>
         }
