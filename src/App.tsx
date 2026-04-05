@@ -4,7 +4,8 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import TransactionsPage from "./pages/TransactionsPage"; // ✅ ADD THIS
+import TransactionsPage from "./pages/TransactionsPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 export default function App() {
   return (
@@ -32,6 +33,18 @@ export default function App() {
           <ProtectedRoute>
             <DashboardLayout>
               <TransactionsPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Analytics */}
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <AnalyticsPage />
             </DashboardLayout>
           </ProtectedRoute>
         }

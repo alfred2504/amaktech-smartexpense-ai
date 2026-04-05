@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TransactionForm from "../components/TransactionForm";
 import TransactionList from "../components/TransactionList";
+import {
+  getTransactions,
+  addTransaction,
+  deleteTransaction,
+} from "../data/transactions";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
 
-  const addTransaction = (transaction: any) => {
-    setTransactions((prev) => [transaction, ...prev]);
+  useEffect(() => {
+    setTransactions(getTransactions());
+  }, []);
+
+  const handleAdd = (t: any) => {
+    addTransaction(t);
+    setTransactions(getTransactions());
   };
 
-  const deleteTransaction = (id: number) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+  const handleDelete = (id: number) => {
+    deleteTransaction(id);
+    setTransactions(getTransactions());
   };
 
   return (
@@ -18,11 +29,8 @@ export default function TransactionsPage() {
       <h1 className="text-2xl font-bold">Transactions</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <TransactionForm onAdd={addTransaction} />
-        <TransactionList
-          transactions={transactions}
-          onDelete={deleteTransaction}
-        />
+        <TransactionForm onAdd={handleAdd} />
+        <TransactionList transactions={transactions} onDelete={handleDelete} />
       </div>
     </div>
   );

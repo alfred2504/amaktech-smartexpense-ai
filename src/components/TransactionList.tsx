@@ -23,13 +23,7 @@ export default function TransactionList({ transactions, onDelete }: any) {
                 <td>{t.date}</td>
                 <td>{t.category}</td>
                 <td>{t.type}</td>
-                <td
-                  className={
-                    t.type === "income"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }
-                >
+                <td className={t.type === "income" ? "text-green-600" : "text-red-600"}>
                   ${t.amount}
                 </td>
                 <td>

@@ -28,10 +28,7 @@ export default function TransactionForm({ onAdd }: any) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white p-4 rounded-lg shadow space-y-3"
-    >
+    <form className="bg-white p-4 rounded-lg shadow space-y-3" onSubmit={handleSubmit}>
       <h2 className="font-bold">Add Transaction</h2>
 
       <select
