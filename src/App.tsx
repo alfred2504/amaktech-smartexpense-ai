@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import TransactionsPage from "./pages/TransactionsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import BudgetsPage from "./pages/BudgetsPage";
+import AIPage from "./pages/AIPage";
 
 export default function App() {
   return (
@@ -27,7 +28,6 @@ export default function App() {
         }
       />
 
-      {/* Transactions */}
       <Route
         path="/transactions"
         element={
@@ -39,7 +39,6 @@ export default function App() {
         }
       />
 
-      {/* Analytics */}
       <Route
         path="/analytics"
         element={
@@ -51,14 +50,25 @@ export default function App() {
         }
       />
 
-     <Route
-      path="/budgets"
-      element={
-        <ProtectedRoute>
-          <DashboardLayout>
-            <BudgetsPage />
-          </DashboardLayout>
-        </ProtectedRoute>
+      <Route
+        path="/budgets"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <BudgetsPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/ai"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <AIPage />
+            </DashboardLayout>
+          </ProtectedRoute>
         }
       />
     </Routes>
