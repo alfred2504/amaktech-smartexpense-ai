@@ -7,15 +7,17 @@ export const ThemeProvider = ({ children }: any) => {
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    setDark(saved === "dark");
+    if (saved === "dark") setDark(true);
   }, []);
 
   useEffect(() => {
+    const root = document.documentElement;
+
     if (dark) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark"); // ✅ THIS CONTROLS EVERYTHING
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
