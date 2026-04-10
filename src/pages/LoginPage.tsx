@@ -27,19 +27,18 @@ export default function LoginPage() {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Save token in context & localStorage
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        setToken(data.token);
+      const token = data.data?.accessToken;
+      const user = data.data?.user;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        setToken(token);
       }
 
-      // ✅ Save user in context & localStorage
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setUser(data.user);
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
       }
-
-      alert("Login successful");
 
       // Navigate to dashboard
       navigate("/"); // dashboard route

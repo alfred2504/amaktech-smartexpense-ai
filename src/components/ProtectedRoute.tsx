@@ -9,7 +9,11 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, token } = useAuth();
 
-  if (!token || !user) {
+  // Fall back to localStorage in case context hasn't updated yet after login
+  const resolvedToken = token || localStorage.getItem("token");
+  const resolvedUser = user || localStorage.getItem("user");
+
+  if (!resolvedToken || !resolvedUser) {
     return <Navigate to="/login" replace />;
   }
 
