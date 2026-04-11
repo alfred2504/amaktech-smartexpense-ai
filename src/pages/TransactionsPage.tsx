@@ -12,8 +12,6 @@ export default function TransactionsPage() {
     date: "",
   });
 
-  const token = localStorage.getItem("token");
-
   // 🔥 FETCH TRANSACTIONS
   const fetchTransactions = async () => {
     try {
@@ -23,23 +21,30 @@ export default function TransactionsPage() {
         "https://smartexpense-api.onrender.com/api/v1/transactions",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
       const data = await res.json();
+      console.log("FETCH TRANSACTIONS STATUS:", res.status, data);
+
+      if (!res.ok) {
+        console.error("Fetch failed:", res.status, data.message);
+        return;
+      }
 
       const tx =
+        data.data?.items ||
         data.data?.transactions ||
         data.data ||
-        data.transactions ||
         [];
 
+      console.log("TRANSACTIONS ARRAY:", tx);
       setTransactions(Array.isArray(tx) ? tx : []);
 
     } catch (err) {
-      console.error(err);
+      console.error("FETCH ERROR:", err);
     } finally {
       setLoading(false);
     }
@@ -76,7 +81,7 @@ export default function TransactionsPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(payload),
         }

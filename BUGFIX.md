@@ -58,3 +58,31 @@ TypeError: Cannot destructure property 'dark' of 'useTheme(...)' as it is null.
   </AuthProvider>
 </ThemeProvider>
 ```
+
+---
+
+## Problem 3: New transactions not reflecting in the list after submit
+
+After submitting the transaction form, the API posted successfully but the list didn't update.
+
+**Root cause:** The token was captured once at component mount time:
+
+```ts
+const token = localStorage.getItem("token");
+```
+
+The access token has a 15-minute TTL. After it expired, all fetch calls (both GET and POST) silently failed with 401s — so `fetchTransactions()` after submit returned nothing and the list stayed empty.
+
+**Fix:** Removed the stale top-level token variable and read it dynamically inside each request:
+
+```ts
+// Before
+const token = localStorage.getItem("token"); // captured once at mount
+
+Authorization: `Bearer ${token}` // stale after 15 min
+
+// After
+Authorization: `Bearer ${localStorage.getItem("token")}` // always fresh
+```
+
+Also added a `console.log` on the fetch response to make the API shape visible for debugging.
