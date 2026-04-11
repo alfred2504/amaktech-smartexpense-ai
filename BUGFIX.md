@@ -65,7 +65,9 @@ TypeError: Cannot destructure property 'dark' of 'useTheme(...)' as it is null.
 
 After submitting the transaction form, the API posted successfully but the list didn't update.
 
-**Root cause:** The token was captured once at component mount time:
+**Root causes:**
+
+1. The token was captured once at component mount time:
 
 ```ts
 const token = localStorage.getItem("token");
@@ -85,4 +87,25 @@ Authorization: `Bearer ${token}` // stale after 15 min
 Authorization: `Bearer ${localStorage.getItem("token")}` // always fresh
 ```
 
-Also added a `console.log` on the fetch response to make the API shape visible for debugging.
+2. The response shape was incorrectly mapped. The transactions list is nested under `data.data.items`, not `data.data`:
+
+```ts
+// Before
+const tx = data.data?.transactions || data.data || data.transactions || [];
+
+// After
+const tx = data.data?.items || data.data?.transactions || data.data || [];
+```
+
+API response shape:
+```json
+{
+  "status": "success",
+  "data": {
+    "items": [...],
+    "pagination": {}
+  }
+}
+```
+
+`Array.isArray(tx)` was returning `false` on the object `{ items, pagination }`, so `setTransactions` was always set to `[]`.
