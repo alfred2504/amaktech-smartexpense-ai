@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaMoneyBill,
@@ -7,9 +7,14 @@ import {
   FaRobot,
   FaUser,
 } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
   const location = useLocation();
+
+  // 🔥 ADDED (for logout only)
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const menu = [
     { name: "Dashboard", path: "/", icon: <FaHome /> },
@@ -54,7 +59,14 @@ export default function Sidebar() {
           Profile
         </Link>
 
-        <button className="flex items-center gap-3 p-2 rounded-md hover:bg-red-100 text-red-500 w-full text-left">
+        {/* 🔥 FIXED LOGOUT BUTTON */}
+        <button
+          onClick={() => {
+            logout(); // clears token + user
+            navigate("/login"); // redirect
+          }}
+          className="flex items-center gap-3 p-2 rounded-md hover:bg-red-100 text-red-500 w-full text-left"
+        >
           🚪 Logout
         </button>
       </div>
