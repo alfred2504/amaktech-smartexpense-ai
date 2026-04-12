@@ -1,41 +1,48 @@
 import { Routes, Route } from "react-router-dom";
 
-// Layout
-import DashboardLayout from "./layouts/DashboardLayout";
-
-// Auth Pages
+import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
-// App Pages
 import DashboardPage from "./pages/DashboardPage";
 import TransactionsPage from "./pages/TransactionsPage";
-import BudgetsPage from "./pages/BudgetsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
+import BudgetsPage from "./pages/BudgetsPage";
 import AIPage from "./pages/AIPage";
 import ProfilePage from "./pages/ProfilePage";
 
-// Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
+import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
 
-export default function App() {
+function App() {
   return (
     <Routes>
 
-      {/* AUTH ROUTES */}
+      {/* 🔥 PUBLIC ROUTES */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-      {/* PROTECTED ROUTES */}
+      {/* 🔐 PROTECTED ROUTES */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
+            <div className="flex flex-col h-screen">
+              
+              {/* 🔥 NAVBAR */}
+              <Navbar />
+
+              <div className="flex flex-1">
+                <Sidebar />
+
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <DashboardPage />
+                </div>
+              </div>
+
+            </div>
           </ProtectedRoute>
         }
       />
@@ -44,20 +51,16 @@ export default function App() {
         path="/transactions"
         element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <TransactionsPage />
-            </DashboardLayout>
-          </ProtectedRoute>
-        }
-      />
+            <div className="flex flex-col h-screen">
+              <Navbar />
 
-      <Route
-        path="/budgets"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <BudgetsPage />
-            </DashboardLayout>
+              <div className="flex flex-1">
+                <Sidebar />
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <TransactionsPage />
+                </div>
+              </div>
+            </div>
           </ProtectedRoute>
         }
       />
@@ -66,9 +69,34 @@ export default function App() {
         path="/analytics"
         element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <AnalyticsPage />
-            </DashboardLayout>
+            <div className="flex flex-col h-screen">
+              <Navbar />
+
+              <div className="flex flex-1">
+                <Sidebar />
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <AnalyticsPage />
+                </div>
+              </div>
+            </div>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/budgets"
+        element={
+          <ProtectedRoute>
+            <div className="flex flex-col h-screen">
+              <Navbar />
+
+              <div className="flex flex-1">
+                <Sidebar />
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <BudgetsPage />
+                </div>
+              </div>
+            </div>
           </ProtectedRoute>
         }
       />
@@ -77,9 +105,16 @@ export default function App() {
         path="/ai"
         element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <AIPage />
-            </DashboardLayout>
+            <div className="flex flex-col h-screen">
+              <Navbar />
+
+              <div className="flex flex-1">
+                <Sidebar />
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <AIPage />
+                </div>
+              </div>
+            </div>
           </ProtectedRoute>
         }
       />
@@ -88,9 +123,16 @@ export default function App() {
         path="/profile"
         element={
           <ProtectedRoute>
-            <DashboardLayout>
-              <ProfilePage />
-            </DashboardLayout>
+            <div className="flex flex-col h-screen">
+              <Navbar />
+
+              <div className="flex flex-1">
+                <Sidebar />
+                <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                  <ProfilePage />
+                </div>
+              </div>
+            </div>
           </ProtectedRoute>
         }
       />
@@ -98,3 +140,5 @@ export default function App() {
     </Routes>
   );
 }
+
+export default App;
