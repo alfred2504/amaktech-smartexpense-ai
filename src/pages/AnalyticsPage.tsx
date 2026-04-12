@@ -1,11 +1,39 @@
 import { useMemo, useEffect, useState } from "react";
-import { getTransactions } from "../data/transactions";
 
 export default function AnalyticsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
 
   useEffect(() => {
-    setTransactions(getTransactions());
+    const fetchTransactions = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/transactions",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        console.log("ANALYTICS RESPONSE:", data);
+
+        const tx =
+          data.data?.transactions ||
+          data.data ||
+          data.transactions ||
+          [];
+
+        setTransactions(Array.isArray(tx) ? tx : []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTransactions();
   }, []);
 
   const { income, expenses, balance, categories } = useMemo(() => {

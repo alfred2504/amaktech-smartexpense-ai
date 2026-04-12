@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { getBudgets, addBudget, deleteBudget } from "../data/budgets";
-import { getTransactions } from "../data/transactions";
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState<any[]>([]);
@@ -9,12 +7,59 @@ export default function BudgetsPage() {
   const [category, setCategory] = useState("");
   const [limit, setLimit] = useState("");
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    setBudgets(getBudgets());
-    setTransactions(getTransactions());
+    const fetchData = async () => {
+      try {
+        // 🔥 FETCH BUDGETS
+        const resBudgets = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/budgets",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const budgetsData = await resBudgets.json();
+
+        const b =
+          budgetsData.data?.budgets ||
+          budgetsData.data ||
+          budgetsData.budgets ||
+          [];
+
+        setBudgets(Array.isArray(b) ? b : []);
+
+        // 🔥 FETCH TRANSACTIONS
+        const resTx = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/transactions",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const txData = await resTx.json();
+
+        const t =
+          txData.data?.transactions ||
+          txData.data ||
+          txData.transactions ||
+          [];
+
+        setTransactions(Array.isArray(t) ? t : []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!category || !limit) {
@@ -22,19 +67,59 @@ export default function BudgetsPage() {
       return;
     }
 
-    addBudget({
-      category,
-      limit: Number(limit),
-    });
+    try {
+      const res = await fetch(
+        "https://smartexpense-api.onrender.com/api/v1/budgets",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category,
+            limit: Number(limit),
+          }),
+        }
+      );
 
-    setBudgets([...getBudgets()]);
-    setCategory("");
-    setLimit("");
+      const data = await res.json();
+      console.log("ADD BUDGET:", data);
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed");
+      }
+
+      // 🔥 refresh
+      setBudgets((prev) => [data.data || data, ...prev]);
+
+      setCategory("");
+      setLimit("");
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
-  const handleDelete = (cat: string) => {
-    deleteBudget(cat);
-    setBudgets([...getBudgets()]);
+  const handleDelete = async (cat: string) => {
+    try {
+      const res = await fetch(
+        `https://smartexpense-api.onrender.com/api/v1/budgets/${cat}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setBudgets((prev) =>
+        prev.filter((b) => b.category !== cat)
+      );
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   // calculate spending per category

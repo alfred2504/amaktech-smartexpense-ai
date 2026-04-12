@@ -10,37 +10,85 @@ export default function DashboardPage() {
     expenses: 0,
   });
 
-  const [pieData, setPieData] = useState([
-    { name: "Income", value: 0 },
-    { name: "Expenses", value: 0 },
-  ]);
+  const [pieData, setPieData] = useState<any[]>([]);
+  const [lineData, setLineData] = useState<any[]>([]);
 
-  const [lineData, setLineData] = useState([
-    { name: "Jan", income: 0, expenses: 0 },
-    { name: "Feb", income: 0, expenses: 0 },
-    { name: "Mar", income: 0, expenses: 0 },
-  ]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    // Mock data (replace with API later)
-    const mock = {
-      balance: 2450,
-      income: 1800,
-      expenses: 650,
+    const fetchDashboard = async () => {
+      try {
+        // 🔥 SUMMARY (cards)
+        const resSummary = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/transactions/summary",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const summaryData = await resSummary.json();
+        console.log("SUMMARY:", summaryData);
+
+        const summary =
+          summaryData.data || summaryData;
+
+        setData({
+          balance: summary.balance || 0,
+          income: summary.income || 0,
+          expenses: summary.expenses || 0,
+        });
+
+        // 🔥 BREAKDOWN (pie chart)
+        const resBreakdown = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/transactions/breakdown",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const breakdownData = await resBreakdown.json();
+        console.log("BREAKDOWN:", breakdownData);
+
+        const breakdown =
+          breakdownData.data || breakdownData;
+
+        const formattedPie = Object.entries(breakdown).map(
+          ([key, value]: any) => ({
+            name: key,
+            value,
+          })
+        );
+
+        setPieData(formattedPie);
+
+        // 🔥 TREND (line chart)
+        const resTrend = await fetch(
+          "https://smartexpense-api.onrender.com/api/v1/transactions/trend",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const trendData = await resTrend.json();
+        console.log("TREND:", trendData);
+
+        const trend =
+          trendData.data || trendData;
+
+        setLineData(Array.isArray(trend) ? trend : []);
+
+      } catch (err) {
+        console.error(err);
+      }
     };
 
-    setData(mock);
-
-    setPieData([
-      { name: "Income", value: mock.income },
-      { name: "Expenses", value: mock.expenses },
-    ]);
-
-    setLineData([
-      { name: "Jan", income: 500, expenses: 200 },
-      { name: "Feb", income: 700, expenses: 300 },
-      { name: "Mar", income: 600, expenses: 150 },
-    ]);
+    fetchDashboard();
   }, []);
 
   return (
