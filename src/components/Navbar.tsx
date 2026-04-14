@@ -57,7 +57,7 @@ export default function Navbar({ toggleSidebar }: any) {
             logout();
             navigate("/login");
           }}
-          className="hidden md:block text-sm text-red-500 hover:underline"
+          className="block text-sm text-red-500 hover:underline"
         >
           Logout
         </button>
