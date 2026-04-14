@@ -1,50 +1,30 @@
-// src/pages/LoginPage.tsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API } from "../api/api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setUser, setToken } = useAuth();
-
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        "https://smartexpense-api.onrender.com/api/v1/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
+      const res = await API.post("/auth/login", form);
+      const { user, accessToken, refreshToken } = res.data.data;
 
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user));
+      setToken(accessToken);
+      setUser(user);
 
-      if (!res.ok) throw new Error(data.message || "Login failed");
-
-      const token = data.data?.accessToken;
-      const user = data.data?.user;
-
-      if (token) {
-        localStorage.setItem("token", token);
-        setToken(token);
-      }
-
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-        setUser(user);
-      }
-
-      // Navigate to dashboard
-      navigate("/"); // dashboard route
+      navigate("/");
     } catch (err: any) {
-      console.error("LOGIN ERROR:", err);
-      alert(err.message);
+      const msg = err.response?.data?.message || "Login failed";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -53,9 +33,7 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-md space-y-4">
-        <h2 className="text-xl font-bold text-center text-gray-900 dark:text-white">
-          Login
-        </h2>
+        <h2 className="text-xl font-bold text-center text-gray-900 dark:text-white">Login</h2>
 
         <input
           type="email"
@@ -63,7 +41,6 @@ export default function LoginPage() {
           className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -72,9 +49,7 @@ export default function LoginPage() {
         />
 
         <div className="text-right">
-          <Link to="/forgot-password" className="text-blue-500 text-sm">
-            Forgot Password?
-          </Link>
+          <Link to="/forgot-password" className="text-blue-500 text-sm">Forgot Password?</Link>
         </div>
 
         <button
@@ -86,10 +61,8 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-sm text-gray-700 dark:text-gray-300">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-500">
-            Register
-          </Link>
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-500">Register</Link>
         </p>
       </div>
     </div>

@@ -1,137 +1,110 @@
 import { useEffect, useState } from "react";
+import { API } from "../api/api";
 
 export default function AIPage() {
-  const [insights, setInsights] = useState<string[]>([]);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [insights, setInsights] = useState<any[]>([]);
+  const [summary, setSummary] = useState("");
+  const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [insightsLoading, setInsightsLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-
-  // 🔥 FETCH AI INSIGHTS
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const res = await fetch(
-          "https://smartexpense-api.onrender.com/api/v1/ai/insights",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await res.json();
-        console.log("INSIGHTS:", data);
-
-        const result =
-          data.data?.insights ||
-          data.data ||
-          data.insights ||
-          [];
-
-        setInsights(Array.isArray(result) ? result : []);
+        const res = await API.get("/ai/insights");
+        const d = res.data.data;
+        setInsights(d.insights ?? []);
+        setSummary(d.summary ?? "");
       } catch (err) {
-        console.error(err);
+        console.error("Insights error:", err);
+      } finally {
+        setInsightsLoading(false);
       }
     };
-
     fetchInsights();
   }, []);
 
-  // 🔥 SEND CHAT MESSAGE
   const sendMessage = async () => {
-    if (!input) return;
-
-    const userMessage = { role: "user", text: input };
-
-    setMessages((prev) => [...prev, userMessage]);
+    if (!input.trim()) return;
+    const userMsg = { role: "user", text: input };
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
-
     try {
-      const res = await fetch(
-        "https://smartexpense-api.onrender.com/api/v1/ai/chat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ message: userMessage.text }),
-        }
-      );
-
-      const data = await res.json();
-      console.log("AI RESPONSE:", data);
-
-      const reply =
-        data.data?.reply ||
-        data.reply ||
-        "No response";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "ai", text: reply },
-      ]);
-    } catch (err) {
-      console.error(err);
+      const res = await API.post("/ai/chat", { message: userMsg.text });
+      const reply = res.data.data.reply ?? "No response";
+      setMessages((prev) => [...prev, { role: "ai", text: reply }]);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "AI error";
+      setMessages((prev) => [...prev, { role: "ai", text: msg }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") sendMessage();
   };
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">AI Insights</h1>
 
-      {/* 🔥 INSIGHTS */}
+      {/* Insights */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-        <h2 className="font-semibold mb-3 text-gray-900 dark:text-white">
-          Smart Insights
-        </h2>
+        <h2 className="font-semibold mb-3 text-gray-900 dark:text-white">Smart Insights</h2>
 
-        {insights.length === 0 ? (
-          <p className="text-gray-500">No insights yet</p>
+        {insightsLoading ? (
+          <p className="text-gray-500">Loading insights...</p>
         ) : (
-          <ul className="space-y-2">
-            {insights.map((i, index) => (
-              <li
-                key={index}
-                className="p-2 bg-gray-100 dark:bg-gray-700 rounded"
-              >
-                💡 {i}
-              </li>
-            ))}
-          </ul>
+          <>
+            {summary && (
+              <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">{summary}</p>
+            )}
+            {insights.length === 0 ? (
+              <p className="text-gray-500">No insights yet</p>
+            ) : (
+              <ul className="space-y-2">
+                {insights.map((insight, i) => (
+                  <li
+                    key={i}
+                    className={`p-3 rounded text-sm ${
+                      insight.severity === "warning"
+                        ? "bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400"
+                        : insight.severity === "critical"
+                        ? "bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400"
+                        : "bg-gray-100 dark:bg-gray-700"
+                    }`}
+                  >
+                    <p className="font-medium text-gray-900 dark:text-white">{insight.title}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{insight.description}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </div>
 
-      {/* 🔥 CHAT */}
+      {/* Chat */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-        <h2 className="font-semibold mb-3 text-gray-900 dark:text-white">
-          Ask AI
-        </h2>
+        <h2 className="font-semibold mb-3 text-gray-900 dark:text-white">Ask AI</h2>
 
         <div className="h-60 overflow-y-auto space-y-2 mb-3">
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`p-2 rounded max-w-xs ${
+              className={`p-2 rounded max-w-xs text-sm ${
                 m.role === "user"
                   ? "bg-blue-500 text-white ml-auto"
-                  : "bg-gray-200 dark:bg-gray-700"
+                  : "bg-gray-200 dark:bg-gray-700 dark:text-white"
               }`}
             >
               {m.text}
             </div>
           ))}
-
-          {loading && (
-            <p className="text-sm text-gray-500">
-              AI is typing...
-            </p>
-          )}
+          {loading && <p className="text-sm text-gray-500">AI is typing...</p>}
         </div>
 
         <div className="flex gap-2">
@@ -140,12 +113,13 @@ export default function AIPage() {
             placeholder="Ask something..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1 border p-2 rounded dark:bg-gray-700 dark:text-white"
           />
-
           <button
             onClick={sendMessage}
-            className="bg-blue-600 text-white px-4 rounded"
+            disabled={loading}
+            className="bg-blue-600 text-white px-4 rounded disabled:opacity-50"
           >
             Send
           </button>

@@ -1,217 +1,155 @@
 import { useEffect, useState } from "react";
+import { API } from "../api/api";
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState<any[]>([]);
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [form, setForm] = useState({
+    category: "",
+    limit: "",
+    period: "MONTHLY",
+    startDate: "",
+    endDate: "",
+  });
 
-  const [category, setCategory] = useState("");
-  const [limit, setLimit] = useState("");
-
-  const token = localStorage.getItem("token");
+  const fetchBudgets = async () => {
+    try {
+      const res = await API.get("/budgets");
+      setBudgets(res.data.data.budgets ?? []);
+    } catch (err) {
+      console.error("Fetch budgets error:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 🔥 FETCH BUDGETS
-        const resBudgets = await fetch(
-          "https://smartexpense-api.onrender.com/api/v1/budgets",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const budgetsData = await resBudgets.json();
-
-        const b =
-          budgetsData.data?.budgets ||
-          budgetsData.data ||
-          budgetsData.budgets ||
-          [];
-
-        setBudgets(Array.isArray(b) ? b : []);
-
-        // 🔥 FETCH TRANSACTIONS
-        const resTx = await fetch(
-          "https://smartexpense-api.onrender.com/api/v1/transactions",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const txData = await resTx.json();
-
-        const t =
-          txData.data?.transactions ||
-          txData.data ||
-          txData.transactions ||
-          [];
-
-        setTransactions(Array.isArray(t) ? t : []);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
+    fetchBudgets();
   }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!category || !limit) {
+    if (!form.category || !form.limit || !form.startDate || !form.endDate) {
       alert("Fill all fields");
       return;
     }
-
     try {
-      const res = await fetch(
-        "https://smartexpense-api.onrender.com/api/v1/budgets",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            category,
-            limit: Number(limit),
-          }),
-        }
-      );
-
-      const data = await res.json();
-      console.log("ADD BUDGET:", data);
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed");
-      }
-
-      // 🔥 refresh
-      setBudgets((prev) => [data.data || data, ...prev]);
-
-      setCategory("");
-      setLimit("");
+      await API.post("/budgets", {
+        category: form.category,
+        limit: Number(form.limit),
+        period: form.period,
+        startDate: new Date(form.startDate).toISOString(),
+        endDate: new Date(form.endDate).toISOString(),
+      });
+      setForm({ category: "", limit: "", period: "MONTHLY", startDate: "", endDate: "" });
+      fetchBudgets();
     } catch (err: any) {
-      alert(err.message);
+      alert(err.response?.data?.message || "Failed to create budget");
     }
   };
 
-  const handleDelete = async (cat: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(
-        `https://smartexpense-api.onrender.com/api/v1/budgets/${cat}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Delete failed");
-
-      setBudgets((prev) =>
-        prev.filter((b) => b.category !== cat)
-      );
+      await API.delete(`/budgets/${id}`);
+      fetchBudgets();
     } catch (err: any) {
-      alert(err.message);
+      alert(err.response?.data?.message || "Delete failed");
     }
   };
 
-  // calculate spending per category
-  const getSpent = (cat: string) => {
-    return transactions
-      .filter((t) => t.type === "expense" && t.category === cat)
-      .reduce((sum, t) => sum + t.amount, 0);
+  const statusColor = (status: string) => {
+    if (status === "exceeded") return "bg-red-500";
+    if (status === "critical") return "bg-orange-500";
+    if (status === "warning") return "bg-yellow-400";
+    return "bg-green-500";
   };
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Budgets</h1>
 
-      {/* ADD BUDGET */}
+      {/* Form */}
       <form
         onSubmit={handleAdd}
-        className="bg-white p-4 rounded-lg shadow space-y-3"
+        className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-3"
       >
-        <h2 className="font-bold">Set Budget</h2>
+        <h2 className="font-bold text-gray-900 dark:text-white">Set Budget</h2>
 
         <input
           type="text"
           placeholder="Category (e.g. Food)"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full border p-2 rounded"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+          className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"
         />
 
         <input
           type="number"
           placeholder="Limit"
-          value={limit}
-          onChange={(e) => setLimit(e.target.value)}
-          className="w-full border p-2 rounded"
+          value={form.limit}
+          onChange={(e) => setForm({ ...form, limit: e.target.value })}
+          className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"
         />
 
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
-          Save Budget
-        </button>
+        <select
+          value={form.period}
+          onChange={(e) => setForm({ ...form, period: e.target.value })}
+          className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"
+        >
+          <option value="WEEKLY">Weekly</option>
+          <option value="MONTHLY">Monthly</option>
+          <option value="YEARLY">Yearly</option>
+        </select>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm text-gray-500 dark:text-gray-400">Start Date</label>
+            <input
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+              className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="text-sm text-gray-500 dark:text-gray-400">End Date</label>
+            <input
+              type="date"
+              value={form.endDate}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+              className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+        </div>
+
+        <button className="w-full bg-blue-600 text-white py-2 rounded">Save Budget</button>
       </form>
 
-      {/* BUDGET LIST */}
+      {/* Budget List */}
       <div className="space-y-4">
         {budgets.length === 0 ? (
-          <p>No budgets yet</p>
+          <p className="text-gray-500">No budgets yet</p>
         ) : (
-          budgets.map((b) => {
-            const spent = getSpent(b.category);
-            const percent = (spent / b.limit) * 100;
-
-            return (
-              <div
-                key={b.category}
-                className="bg-white p-4 rounded-lg shadow"
-              >
-                <div className="flex justify-between">
-                  <h3 className="font-bold">{b.category}</h3>
-                  <button
-                    onClick={() => handleDelete(b.category)}
-                    className="text-red-500"
-                  >
-                    Delete
-                  </button>
-                </div>
-
-                <p>
-                  ${spent} / ${b.limit}
-                </p>
-
-                {/* PROGRESS BAR */}
-                <div className="w-full bg-gray-200 h-3 rounded mt-2">
-                  <div
-                    className={`h-3 rounded ${
-                      percent > 100
-                        ? "bg-red-500"
-                        : percent > 70
-                        ? "bg-yellow-400"
-                        : "bg-green-500"
-                    }`}
-                    style={{ width: `${Math.min(percent, 100)}%` }}
-                  ></div>
-                </div>
-
-                {/* ALERT */}
-                {percent > 100 && (
-                  <p className="text-red-500 mt-2 text-sm">
-                    🚨 Budget exceeded!
-                  </p>
-                )}
+          budgets.map((b) => (
+            <div key={b.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <div className="flex justify-between items-center mb-1">
+                <h3 className="font-bold text-gray-900 dark:text-white">{b.category}</h3>
+                <button onClick={() => handleDelete(b.id)} className="text-red-500 text-sm">Delete</button>
               </div>
-            );
-          })
+
+              <p className="text-sm text-gray-500 mb-2">
+                ${b.spent} / ${b.limit} · {b.daysLeft} days left · {b.period}
+              </p>
+
+              <div className="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded">
+                <div
+                  className={`h-3 rounded ${statusColor(b.status)}`}
+                  style={{ width: `${Math.min(b.percentageUsed, 100)}%` }}
+                />
+              </div>
+
+              {b.isExceeded && (
+                <p className="text-red-500 mt-2 text-sm">🚨 Budget exceeded!</p>
+              )}
+            </div>
+          ))
         )}
       </div>
     </div>
