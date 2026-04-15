@@ -1,75 +1,129 @@
-# React + TypeScript + Vite
+# SmartExpense AI (AmakTech)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SmartExpense AI is a modern expense-tracking web app that helps you **track transactions**, **set budgets**, **visualize analytics**, and get **AI-powered insights** about your spending.
 
-Currently, two official plugins are available:
+Built with **React + TypeScript + Vite**, styled with **Tailwind CSS**, and connected to a hosted REST API.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Features
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **Authentication**
+  - Register / Login
+  - Protected routes (redirects to login when not authenticated)
+  - Token handling + refresh flow
 
-Note: This will impact Vite dev & build performances.
+- **Dashboard**
+  - Balance, income, and expense summary cards
+  - Spending breakdown (pie chart)
+  - Trends over time (line chart)
 
-## Expanding the ESLint configuration
+- **Transactions**
+  - Add income/expense transactions
+  - List all transactions
+  - Delete transactions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Analytics**
+  - Dedicated analytics page (charts/insights UI)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Budgets**
+  - Budget management page
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **AI Insights**
+  - Auto-generated insights + summary
+  - Chat interface to ask questions and get AI responses
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Routes (App Pages)
+
+Public:
+- `/` — Landing page
+- `/login` — Login page
+- `/register` — Register page
+
+Protected:
+- `/dashboard`
+- `/transactions`
+- `/analytics`
+- `/budgets`
+- `/ai`
+
+---
+
+## Tech Stack
+
+**Frontend**
+- React (with TypeScript)
+- Vite
+- React Router
+- Axios
+- Recharts
+- Tailwind CSS
+
+**Backend API**
+- Base URL: `https://smartexpense-api.onrender.com/api/v1`
+
+---
+
+## Getting Started
+
+### 1) Clone the repository
+```bash
+git clone https://github.com/alfred2504/amaktech-smartexpense-ai.git
+cd amaktech-smartexpense-ai
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2) Install dependencies
+```bash
+npm install
 ```
+
+### 3) Run the development server
+```bash
+npm run dev
+```
+
+### 4) Build for production
+```bash
+npm run build
+```
+
+### 5) Preview the production build
+```bash
+npm run preview
+```
+
+---
+
+## Environment / Configuration
+
+This project currently uses a fixed API base URL in the frontend:
+
+- `src/api/api.ts` sets:
+  - `baseURL: https://smartexpense-api.onrender.com/api/v1`
+
+If you want to use a different backend (local/dev/staging), update the `baseURL` in `src/api/api.ts`.
+
+---
+
+## Authentication Notes
+
+- The app stores auth information in `localStorage` (e.g. `token`, `refreshToken`, `user`).
+- Requests automatically attach `Authorization: Bearer <token>`.
+- When a request returns `401`, the app attempts to refresh the token; if refresh fails it clears storage and redirects to `/login`.
+
+---
+
+## Project Structure (high level)
+
+- `src/App.tsx` — Routes (public + protected)
+- `src/pages/*` — Application pages (Dashboard, Transactions, AI, etc.)
+- `src/components/*` — UI + layout components (ProtectedRoute, charts, cards)
+- `src/api/api.ts` — Axios client + auth interceptors
+
+---
+
+## Credits
+
+© SmartExpense AI — Built by **AmakTech**
