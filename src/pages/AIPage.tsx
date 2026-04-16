@@ -97,10 +97,17 @@ export default function AIPage() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
           <h2 className="font-semibold mb-3 text-gray-900 dark:text-white">Ask AI</h2>
 
-          <div className="h-[400px] mb-3 rounded-lg bg-gray-50 dark:bg-gray-900/30 p-3 overflow-y-auto space-y-2">
+          <div
+            role="log"
+            aria-label="Chat messages"
+            aria-live="polite"
+            className="h-[400px] mb-3 rounded-lg bg-gray-50 dark:bg-gray-900/30 p-3 overflow-y-auto space-y-2"
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
+                role="article"
+                aria-label={m.role === "user" ? "User message" : "AI message"}
                 className={`p-2 rounded max-w-[85%] text-sm ${
                   m.role === "user"
                     ? "bg-blue-500 text-white ml-auto"
