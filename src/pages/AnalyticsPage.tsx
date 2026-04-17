@@ -86,6 +86,10 @@ export default function AnalyticsPage() {
 
   const formatMoney = (value: number) => moneyFormatter.format(Number.isFinite(value) ? value : 0);
 
+  const formatTooltip = (value: number | undefined) => {
+    return value !== undefined ? formatMoney(toNumber(value)) : "";
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -277,7 +281,7 @@ export default function AnalyticsPage() {
                   <YAxis tick={{ fill: "#64748B", fontSize: 12 }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip
                     contentStyle={{ borderRadius: 14, border: "1px solid #E2E8F0", backgroundColor: "#FFFFFF" }}
-                    formatter={(value: number) => formatMoney(toNumber(value))}
+                      formatter={formatTooltip}
                   />
                   <Area type="monotone" dataKey="income" stroke="#10B981" fill="url(#incomeGradient)" strokeWidth={2.5} />
                   <Area type="monotone" dataKey="expense" stroke="#F43F5E" fill="url(#expenseGradient)" strokeWidth={2.5} />
@@ -316,7 +320,7 @@ export default function AnalyticsPage() {
                     </Pie>
                     <Tooltip
                       contentStyle={{ borderRadius: 14, border: "1px solid #E2E8F0", backgroundColor: "#FFFFFF" }}
-                      formatter={(value: number) => formatMoney(toNumber(value))}
+                       formatter={formatTooltip}
                     />
                   </PieChart>
                 </ResponsiveContainer>
