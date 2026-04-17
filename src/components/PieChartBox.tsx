@@ -18,7 +18,7 @@ export default function PieChartBox({ data }: Props) {
       <h2 className="text-lg font-semibold mb-4">Spending Breakdown</h2>
 
       <div className="w-full h-64">
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}

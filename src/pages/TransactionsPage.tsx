@@ -56,51 +56,19 @@ const toText = (value: unknown, fallback = ""): string => {
 
 const toAmount = (value: unknown): number => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
-
   if (typeof value === "string") {
-    const cleaned = value.replace(/[^0-9.-]/g, "");
-    const parsed = Number(cleaned);
+    const parsed = parseFloat(value);
     return Number.isFinite(parsed) ? parsed : 0;
   }
-
+  // Decimal.js object shape: { s: sign, e: exponent, d: digits[] }
   if (value && typeof value === "object") {
-    const record = value as Record<string, unknown> & {
-      toNumber?: () => unknown;
-      valueOf?: () => unknown;
-      toString?: () => string;
-    };
-
-    if (typeof record.toNumber === "function") {
-      const numeric = toAmount(record.toNumber());
-      if (Number.isFinite(numeric)) return numeric;
-    }
-
-    if (typeof record.valueOf === "function") {
-      const primitive = record.valueOf();
-      if (primitive !== value) {
-        const numeric = toAmount(primitive);
-        if (Number.isFinite(numeric)) return numeric;
-      }
-    }
-
-    if (typeof record.toString === "function") {
-      const text = record.toString();
-      if (text && text !== "[object Object]") {
-        const numeric = toAmount(text);
-        if (Number.isFinite(numeric)) return numeric;
-      }
-    }
-
-    const preferredKeys = ["amount", "value", "total", "$numberDecimal", "numberDecimal", "_value"];
-
-    for (const key of preferredKeys) {
-      if (key in record) {
-        const parsed = toAmount(record[key]);
-        if (Number.isFinite(parsed)) return parsed;
-      }
+    const dec = value as { s?: number; e?: number; d?: number[] };
+    if (typeof dec.s === "number" && typeof dec.e === "number" && Array.isArray(dec.d) && dec.d.length > 0) {
+      const digits = dec.d[0];
+      const exp = dec.e - (String(digits).length - 1);
+      return dec.s * digits * Math.pow(10, exp);
     }
   }
-
   return 0;
 };
 
@@ -119,11 +87,12 @@ const normalizeTransaction = (item: RawTransaction): Transaction => {
   const description = toText(item.description, "");
   const typeRaw = toText(item.type, "EXPENSE");
   const normalizedType = typeRaw.toUpperCase() === "INCOME" ? "INCOME" : "EXPENSE";
+  const amount = toAmount(item.amount);
 
   return {
     id: toText(item.id, `${Date.now()}-${Math.random()}`),
     type: normalizedType,
-    amount: toAmount(item.amount),
+    amount,
     category,
     description,
     date: toDateText(item.date),

@@ -9,7 +9,7 @@ import {
 } from "recharts";
 
 type Props = {
-  data: { name: string; income: number; expenses: number }[];
+  data: { month: string; income: number; expense: number; net: number }[];
 };
 
 export default function LineChartBox({ data }: Props) {
@@ -18,11 +18,11 @@ export default function LineChartBox({ data }: Props) {
       <h2 className="text-lg font-semibold mb-4">Monthly Overview</h2>
 
       <div className="w-full h-64">
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="name" />
+            <XAxis dataKey="month" />
             <YAxis />
 
             <Tooltip />
@@ -36,7 +36,7 @@ export default function LineChartBox({ data }: Props) {
 
             <Line
               type="monotone"
-              dataKey="expenses"
+              dataKey="expense"
               stroke="#EF4444"
               strokeWidth={3}
             />
