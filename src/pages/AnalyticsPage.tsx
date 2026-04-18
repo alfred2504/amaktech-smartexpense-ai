@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+mmport  useEffect, useMemo, useState } from "react";
 import { API } from "../api/api";
 import {
   FiActivity,
@@ -46,7 +46,16 @@ const moneyFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
-const PIE_COLORS = ["#0284C7", "#0EA5E9", "#22D3EE", "#14B8A6", "#10B981", "#84CC16", "#F59E0B", "#F97316"];
+const PIE_COLORS = [
+  "#0284C7",
+  "#0EA5E9",
+  "#22D3EE",
+  "#14B8A6",
+  "#10B981",
+  "#84CC16",
+  "#F59E0B",
+  "#F97316",
+];
 
 const toNumber = (value: unknown): number => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -86,9 +95,9 @@ export default function AnalyticsPage() {
 
   const formatMoney = (value: number) => moneyFormatter.format(Number.isFinite(value) ? value : 0);
 
-  const formatTooltip = (value: number | undefined) => {
-    return value !== undefined ? formatMoney(toNumber(value)) : "";
-  };
+  // Recharts Tooltip formatter value is not always a number (can be string/array/etc),
+  // so accept unknown and coerce safely.
+  const formatTooltip = (value: unknown) => formatMoney(toNumber(value));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -178,7 +187,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 px-6 py-7 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.85)] dark:border-white/10 sm:px-8">
+      <section className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 px-6 py-7 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.85)] sm:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.2),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.18),transparent_30%)]" />
         <div className="relative grid gap-8 lg:grid-cols-[1.35fr_0.9fr] lg:items-end">
           <div className="space-y-4">
@@ -187,7 +196,9 @@ export default function AnalyticsPage() {
               Financial analytics
             </div>
             <div className="space-y-3">
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Insights that show where your money is actually moving.</h1>
+              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Insights that show where your money is actually moving.
+              </h1>
               <p className="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
                 Scan trend direction, category concentration, and your current runway in one screen.
               </p>
@@ -216,7 +227,10 @@ export default function AnalyticsPage() {
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Expense pressure</p>
                 <p className="mt-2 text-3xl font-semibold text-white">
-                  {summary.totalIncome === 0 ? 0 : Math.min(Math.round((summary.totalExpense / summary.totalIncome) * 100), 999)}%
+                  {summary.totalIncome === 0
+                    ? 0
+                    : Math.min(Math.round((summary.totalExpense / summary.totalIncome) * 100), 999)}
+                  %
                 </p>
               </div>
               <div className="rounded-2xl bg-cyan-400/10 p-3 text-cyan-300 ring-1 ring-cyan-300/20">
@@ -226,12 +240,23 @@ export default function AnalyticsPage() {
             <div className="mt-5 space-y-2">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Expenses vs income</span>
-                <span>{summary.totalIncome === 0 ? 0 : Math.min(Math.round((summary.totalExpense / summary.totalIncome) * 100), 999)}%</span>
+                <span>
+                  {summary.totalIncome === 0
+                    ? 0
+                    : Math.min(Math.round((summary.totalExpense / summary.totalIncome) * 100), 999)}
+                  %
+                </span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-teal-300"
-                  style={{ width: `${summary.totalIncome === 0 ? 0 : Math.min((summary.totalExpense / summary.totalIncome) * 100, 100)}%` }}
+                  style={{
+                    width: `${
+                      summary.totalIncome === 0
+                        ? 0
+                        : Math.min((summary.totalExpense / summary.totalIncome) * 100, 100)
+                    }%`,
+                  }}
                 />
               </div>
               <p className="text-sm text-slate-300">
@@ -249,7 +274,9 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Monthly trend</h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Income and expenses over time, with net movement for each month.</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Income and expenses over time, with net movement for each month.
+              </p>
             </div>
             <div className="rounded-2xl bg-cyan-50 p-3 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300">
               <FiTrendingUp className="h-5 w-5" />
@@ -281,10 +308,22 @@ export default function AnalyticsPage() {
                   <YAxis tick={{ fill: "#64748B", fontSize: 12 }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip
                     contentStyle={{ borderRadius: 14, border: "1px solid #E2E8F0", backgroundColor: "#FFFFFF" }}
-                      formatter={formatTooltip}
+                    formatter={formatTooltip}
                   />
-                  <Area type="monotone" dataKey="income" stroke="#10B981" fill="url(#incomeGradient)" strokeWidth={2.5} />
-                  <Area type="monotone" dataKey="expense" stroke="#F43F5E" fill="url(#expenseGradient)" strokeWidth={2.5} />
+                  <Area
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#10B981"
+                    fill="url(#incomeGradient)"
+                    strokeWidth={2.5}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="expense"
+                    stroke="#F43F5E"
+                    fill="url(#expenseGradient)"
+                    strokeWidth={2.5}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -295,7 +334,9 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Category breakdown</h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">See where spending is concentrated and which category dominates.</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                See where spending is concentrated and which category dominates.
+              </p>
             </div>
             <div className="rounded-2xl bg-sky-50 p-3 text-sky-600 dark:bg-sky-500/10 dark:text-sky-300">
               <FiPieChart className="h-5 w-5" />
@@ -313,14 +354,21 @@ export default function AnalyticsPage() {
               <div className="h-52 w-full">
                 <ResponsiveContainer>
                   <PieChart>
-                    <Pie data={breakdown} dataKey="total" nameKey="category" innerRadius={52} outerRadius={84} paddingAngle={3}>
+                    <Pie
+                      data={breakdown}
+                      dataKey="total"
+                      nameKey="category"
+                      innerRadius={52}
+                      outerRadius={84}
+                      paddingAngle={3}
+                    >
                       {breakdown.map((item, index) => (
                         <Cell key={`${item.category}-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip
                       contentStyle={{ borderRadius: 14, border: "1px solid #E2E8F0", backgroundColor: "#FFFFFF" }}
-                       formatter={formatTooltip}
+                      formatter={formatTooltip}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -339,7 +387,9 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-slate-900 dark:text-white">{formatMoney(item.total)}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{Math.max(0, Math.round(item.percentage))}%</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {Math.max(0, Math.round(item.percentage))}%
+                        </p>
                       </div>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
@@ -362,7 +412,9 @@ export default function AnalyticsPage() {
       {!loading && trend.length > 0 && (
         <section className="rounded-3xl border border-slate-200/70 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-900 sm:p-6">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Monthly snapshot</h2>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">A compact month-by-month ledger for quick comparisons.</p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            A compact month-by-month ledger for quick comparisons.
+          </p>
 
           <div className="mt-5 overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-white/10">
@@ -380,7 +432,11 @@ export default function AnalyticsPage() {
                     <td className="px-3 py-3 font-medium">{item.month}</td>
                     <td className="px-3 py-3 text-emerald-600 dark:text-emerald-300">{formatMoney(item.income)}</td>
                     <td className="px-3 py-3 text-rose-600 dark:text-rose-300">{formatMoney(item.expense)}</td>
-                    <td className={`px-3 py-3 font-semibold ${item.net >= 0 ? "text-cyan-600 dark:text-cyan-300" : "text-rose-600 dark:text-rose-300"}`}>
+                    <td
+                      className={`px-3 py-3 font-semibold ${
+                        item.net >= 0 ? "text-cyan-600 dark:text-cyan-300" : "text-rose-600 dark:text-rose-300"
+                      }`}
+                    >
                       {item.net >= 0 ? "+" : "-"}
                       {formatMoney(Math.abs(item.net))}
                     </td>
@@ -394,3 +450,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+```
