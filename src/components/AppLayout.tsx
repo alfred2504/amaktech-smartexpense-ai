@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import SiteFooter from "./SiteFooter";
 
 export default function AppLayout({ children }: any) {
   const [open, setOpen] = useState(false);
@@ -32,7 +33,10 @@ export default function AppLayout({ children }: any) {
         )}
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {children}
+          <div className="mx-auto flex min-h-full w-full max-w-[1400px] flex-col gap-8">
+            {children}
+            <SiteFooter className="mt-auto pb-2" />
+          </div>
         </main>
       </div>
     </div>
