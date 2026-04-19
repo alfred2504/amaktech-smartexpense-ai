@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { API } from "../api/api";
 import {
-  FiActivity,
   FiArrowDownRight,
   FiArrowUpRight,
-  FiBarChart2,
-  FiPieChart,
   FiTrendingUp,
 } from "react-icons/fi";
 
@@ -94,21 +91,18 @@ export default function AnalyticsPage() {
   const [summary, setSummary] = useState<Summary>({ totalIncome: 0, totalExpense: 0, balance: 0 });
   const [breakdown, setBreakdown] = useState<BreakdownItem[]>([]);
   const [trend, setTrend] = useState<TrendItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const formatMoney = (value: number) =>
     moneyFormatter.format(Number.isFinite(value) ? value : 0);
 
   // ✅ FIXED formatter (TypeScript-safe for Recharts)
-  const formatTooltip = (value: ValueType) => {
+  const formatTooltip = (value: ValueType | undefined) => {
     return formatMoney(toNumber(value));
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-
         const [resSummary, resBreakdown, resTrend] = await Promise.all([
           API.get("/transactions/summary"),
           API.get("/transactions/breakdown"),
@@ -156,8 +150,6 @@ export default function AnalyticsPage() {
         setSummary({ totalIncome: 0, totalExpense: 0, balance: 0 });
         setBreakdown([]);
         setTrend([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -234,7 +226,7 @@ export default function AnalyticsPage() {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie data={breakdown} dataKey="total" nameKey="category">
-                {breakdown.map((item, index) => (
+                {breakdown.map((_, index) => (
                   <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                 ))}
               </Pie>
