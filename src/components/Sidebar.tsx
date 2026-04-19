@@ -1,10 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   FiBarChart2,
+  FiCreditCard,
   FiCpu,
   FiHome,
   FiLogOut,
-  FiWallet,
+  FiTarget,
   FiX,
 } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
@@ -22,9 +23,9 @@ export default function Sidebar({ onNavigate, onClose, showCloseButton = false }
 
   const menu = [
     { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
-    { name: "Transactions", path: "/transactions", icon: <FiWallet /> },
+    { name: "Transactions", path: "/transactions", icon: <FiCreditCard /> },
     { name: "Analytics", path: "/analytics", icon: <FiBarChart2 /> },
-    { name: "Budgets", path: "/budgets", icon: <FiWallet /> },
+    { name: "Budgets", path: "/budgets", icon: <FiTarget /> },
     { name: "AI Insights", path: "/ai", icon: <FiCpu /> },
   ];
 
