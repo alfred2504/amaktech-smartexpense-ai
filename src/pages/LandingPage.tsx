@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FiBarChart2, FiCpu, FiDollarSign, FiTarget } from "react-icons/fi";
+import SiteFooter from "../components/SiteFooter";
 
 const showcasePhotos = [
   {
@@ -183,9 +184,7 @@ export default function LandingPage() {
           </Link>
         </section>
 
-        <footer className="relative z-10 mt-10 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} SmartExpense AI | Built by AmakTech
-        </footer>
+        <SiteFooter className="relative z-10 mt-10" />
       </div>
     </div>
   );
