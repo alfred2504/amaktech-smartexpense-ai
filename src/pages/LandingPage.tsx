@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FiBarChart2, FiCpu, FiDollarSign, FiTarget } from "react-icons/fi";
 import SiteFooter from "../components/SiteFooter";
+import { WEB_ICON_URL } from "../constants/brand";
 
 const showcasePhotos = [
   {
@@ -54,7 +55,14 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute -right-20 top-24 h-72 w-72 rounded-full bg-amber-200/45 blur-3xl" />
 
         <header className="relative z-10 flex items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-4 py-3 shadow-lg shadow-slate-900/5 backdrop-blur sm:px-6">
-          <h1 className="text-lg font-black tracking-tight text-slate-900 sm:text-xl">SmartExpense AI</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src={WEB_ICON_URL}
+              alt="SmartExpense icon"
+              className="h-10 w-10 rounded-xl border border-slate-200 bg-white object-cover shadow-sm"
+            />
+            <h1 className="text-lg font-black tracking-tight text-slate-900 sm:text-xl">SmartExpense AI</h1>
+          </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/login"

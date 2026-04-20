@@ -3,6 +3,7 @@ import { FiBell, FiLogOut, FiMenu, FiSearch, FiUser } from "react-icons/fi";
 import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { WEB_ICON_URL } from "../constants/brand";
 
 type NavbarProps = {
   toggleSidebar?: () => void;
@@ -54,6 +55,11 @@ export default function Navbar({ toggleSidebar }: NavbarProps) {
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/85 sm:px-6">
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-3">
+          <img
+            src={WEB_ICON_URL}
+            alt="SmartExpense icon"
+            className="h-9 w-9 rounded-xl border border-slate-200 bg-white object-cover shadow-sm dark:border-slate-700"
+          />
           <button
             onClick={toggleSidebar}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800 md:hidden"

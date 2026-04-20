@@ -9,6 +9,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
+import { WEB_ICON_URL } from "../constants/brand";
 
 type SidebarProps = {
   onNavigate?: () => void;
@@ -33,11 +34,18 @@ export default function Sidebar({ onNavigate, onClose, showCloseButton = false }
     <aside className="flex h-full w-72 flex-col justify-between border-r border-slate-200/70 bg-white px-4 py-5 dark:border-slate-700 dark:bg-slate-900">
       <div>
         <div className="mb-6 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 dark:border-slate-700 dark:bg-slate-800">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-300">
-              SmartExpense
-            </p>
-            <h2 className="text-sm font-black text-slate-900 dark:text-white">Control Center</h2>
+          <div className="flex items-center gap-3">
+            <img
+              src={WEB_ICON_URL}
+              alt="SmartExpense icon"
+              className="h-10 w-10 rounded-xl border border-slate-200 bg-white object-cover shadow-sm dark:border-slate-700"
+            />
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-300">
+                SmartExpense
+              </p>
+              <h2 className="text-sm font-black text-slate-900 dark:text-white">Control Center</h2>
+            </div>
           </div>
           {showCloseButton && (
             <button
