@@ -10,11 +10,16 @@ export default function LoginPage() {
   const { setUser, setToken } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setLoading(true);
+    setErrorMessage("");
+    console.debug("Login attempt", { email: form.email });
     try {
       const res = await API.post("/auth/login", form);
+      console.debug("Login response", res);
       const { user, accessToken, refreshToken } = res.data.data;
 
       localStorage.setItem("token", accessToken);
@@ -25,8 +30,9 @@ export default function LoginPage() {
 
       navigate("/dashboard");
     } catch (err: any) {
+      console.error("Login error", err);
       const msg = err.response?.data?.message || "Login failed";
-      alert(msg);
+      setErrorMessage(msg);
     } finally {
       setLoading(false);
     }
@@ -69,24 +75,32 @@ export default function LoginPage() {
             <h2 className="mt-2 text-3xl font-black text-slate-900">Log In</h2>
             <p className="mt-2 text-sm text-slate-500">Access your finance workspace in seconds.</p>
 
-            <div className="mt-6 space-y-4">
-              <label className="block text-sm font-semibold text-slate-700">Email</label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-
-              <label className="block text-sm font-semibold text-slate-700">Password</label>
-              <div className="relative">
-                <FiLock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <form className="mt-6 space-y-4" onSubmit={handleLogin}>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">Email</label>
                 <input
-                  type="password"
-                  placeholder="Abc12345"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">Password</label>
+                <div className="relative">
+                  <FiLock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="password"
+                    name="password"
+                    autoComplete="current-password"
+                    placeholder="Abc12345"
+                    className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="text-right">
@@ -96,12 +110,16 @@ export default function LoginPage() {
               </div>
 
               <button
-                onClick={handleLogin}
+                type="submit"
                 disabled={loading}
                 className="w-full rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
               >
                 {loading ? "Logging in..." : "Login to SmartExpense"}
               </button>
+
+              {errorMessage && (
+                <p className="mt-2 text-center text-sm text-red-600">{errorMessage}</p>
+              )}
 
               <p className="text-center text-sm text-slate-600">
                 Don't have an account?{" "}
@@ -109,7 +127,7 @@ export default function LoginPage() {
                   Register
                 </Link>
               </p>
-            </div>
+            </form>
           </div>
         </section>
       </div>
