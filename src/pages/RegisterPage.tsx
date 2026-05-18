@@ -89,7 +89,7 @@ export default function RegisterPage() {
               <label className="block text-sm font-semibold text-slate-700">Password</label>
               <input
                 type="password"
-                placeholder="Create a password"
+                placeholder="Abc12345"
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
