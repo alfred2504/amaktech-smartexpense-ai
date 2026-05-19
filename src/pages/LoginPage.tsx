@@ -31,8 +31,15 @@ export default function LoginPage() {
       navigate("/dashboard");
     } catch (err: any) {
       console.error("Login error", err);
-      const msg = err.response?.data?.message || "Login failed";
-      setErrorMessage(msg);
+      if (!err.response) {
+        setErrorMessage("Unable to connect. Please check your internet connection.");
+      } else if (err.response.status === 401) {
+        setErrorMessage("Invalid email or password.");
+      } else if (err.response.status === 429) {
+        setErrorMessage("Too many login attempts. Please try again later.");
+      } else {
+        setErrorMessage(err.response?.data?.message || "Login failed. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -118,7 +125,9 @@ export default function LoginPage() {
               </button>
 
               {errorMessage && (
-                <p className="mt-2 text-center text-sm text-red-600">{errorMessage}</p>
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {errorMessage}
+                </div>
               )}
 
               <p className="text-center text-sm text-slate-600">

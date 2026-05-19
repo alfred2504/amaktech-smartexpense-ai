@@ -13,12 +13,15 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-refresh on 401
+const authRoutes = ["/auth/login", "/auth/register", "/auth/refresh"];
+
+// Auto-refresh on 401 (skip auth routes so errors show properly)
 API.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
+    const isAuthRoute = authRoutes.some((route) => original.url?.includes(route));
+    if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
       original._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {

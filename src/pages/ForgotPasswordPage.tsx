@@ -8,16 +8,22 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleReset = async () => {
     if (!email) return;
     setLoading(true);
+    setErrorMessage("");
     try {
       await API.post("/auth/forgot-password", { email });
       setSent(true);
     } catch (err: any) {
-      // API always returns 200 regardless — show success anyway
-      setSent(true);
+      if (!err.response) {
+        setErrorMessage("Unable to connect. Please check your internet connection and try again.");
+      } else {
+        // Show success even if email not found (security best practice)
+        setSent(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -67,6 +73,12 @@ export default function ForgotPasswordPage() {
             >
               {loading ? "Sending..." : "Send Reset Link"}
             </button>
+
+            {errorMessage && (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {errorMessage}
+              </div>
+            )}
 
             <p className="flex items-center justify-center gap-2 text-xs text-slate-500">
               <FiShield />

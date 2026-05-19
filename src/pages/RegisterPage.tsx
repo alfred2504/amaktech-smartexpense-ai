@@ -10,10 +10,12 @@ export default function RegisterPage() {
   const { setUser, setToken } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
+    setErrorMessage("");
     try {
       const res = await API.post("/auth/register", form);
       const { user, accessToken, refreshToken } = res.data.data;
@@ -26,8 +28,15 @@ export default function RegisterPage() {
 
       navigate("/dashboard");
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Registration failed";
-      alert(msg);
+      if (!err.response) {
+        setErrorMessage("Unable to connect. Please check your internet connection.");
+      } else if (err.response.status === 409) {
+        setErrorMessage("An account with this email already exists.");
+      } else if (err.response.status === 422) {
+        setErrorMessage("Please enter a valid name, email, and a strong password (8+ characters with uppercase, lowercase, and numbers).");
+      } else {
+        setErrorMessage(err.response?.data?.message || "Registration failed. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -114,6 +123,12 @@ export default function RegisterPage() {
               >
                 {loading ? "Registering..." : "Create SmartExpense Account"}
               </button>
+
+              {errorMessage && (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {errorMessage}
+                </div>
+              )}
 
               <p className="text-center text-sm text-slate-600">
                 Already have an account?{" "}
